@@ -9,7 +9,7 @@ import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import { StyleRulesCallback, Theme, WithStyles, withStyles } from '@material-ui/core/styles';
+import { StyleRulesCallback, WithStyles, withStyles } from '@material-ui/core/styles';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 
@@ -20,6 +20,8 @@ import { withTypes } from 'src/context/types';
 import { LinodeConfigSelectionDrawerCallback } from 'src/features/LinodeConfigSelectionDrawer';
 import { linodeInTransition, transitionText } from 'src/features/linodes/transitions';
 import { lishLaunch } from 'src/features/Lish';
+
+import { sendEvent } from 'src/utilities/analytics';
 import haveAnyBeenModified from 'src/utilities/haveAnyBeenModified';
 
 import { getType } from 'src/services/linodes';
@@ -51,7 +53,7 @@ type CSSClasses =
   | 'StatusIndicatorWrapper'
   | 'link';
 
-const styles: StyleRulesCallback<CSSClasses> = (theme: Theme & Linode.Theme) => ({
+const styles: StyleRulesCallback<CSSClasses> = (theme) => ({
   customeMQ: {
     '@media (min-width: 600px) and (max-width: 680px)': {
       paddingLeft: theme.spacing.unit * 2,
@@ -132,7 +134,8 @@ const styles: StyleRulesCallback<CSSClasses> = (theme: Theme & Linode.Theme) => 
   },
   consoleButton: {
     width: '50%',
-    borderColor: theme.pale,
+    /** @todo This was theme.pale, which doesnt exist. */
+    // borderColor: theme.pale,
     borderRight: '1px solid ' + theme.palette.divider,
   },
   rebootButton: {
@@ -258,11 +261,19 @@ class LinodeCard extends React.Component<CombinedProps, State> {
   }
 
   handleConsoleButtonClick = () => {
+    sendEvent({
+      category: 'Linode Action Menu Item',
+      action: 'Launch Console',
+    })
     const { linodeId } = this.props;
     lishLaunch(linodeId);
   }
 
   handleRebootButtonClick = () => {
+    sendEvent({
+      category: 'Linode Action Menu Item',
+      action: 'Reboot Linode',
+    })
     const { linodeId, linodeLabel, toggleConfirmation} = this.props;
     toggleConfirmation('reboot', linodeId, linodeLabel);
   }

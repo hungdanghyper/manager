@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { PlaceholderProps } from 'react-select/lib/components/Placeholder';
 
-import { StyleRulesCallback, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
+import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 
 type ClassNames = 'root';
 
-const styles: StyleRulesCallback<ClassNames> = (theme: Theme) => ({
+const styles: StyleRulesCallback<ClassNames> = (theme) => ({
   root: {
     position: 'absolute',
     left: '10px'
@@ -21,8 +21,9 @@ const SelectPlaceholder: React.StatelessComponent<CombinedProps> = (props) => {
   return (
     <Typography
       className={props.classes.root}
-      color="textSecondary"
       {...props.innerProps}
+      data-qa-enhanced-select
+      data-qa-multi-select={props.isMulti ? props.selectProps.placeholder : false}
     >
       {props.children}
     </Typography>

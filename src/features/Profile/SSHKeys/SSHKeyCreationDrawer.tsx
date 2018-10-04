@@ -1,7 +1,7 @@
 import { pathOr } from 'ramda';
 import * as React from 'react';
 
-import { StyleRulesCallback, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
+import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/styles';
 
 import ActionsPanel from 'src/components/ActionsPanel';
 import Button from 'src/components/Button';
@@ -13,7 +13,7 @@ import getAPIErrorFor from 'src/utilities/getAPIErrorFor';
 
 type ClassNames = 'root';
 
-const styles: StyleRulesCallback<ClassNames> = (theme: Theme) => ({
+const styles: StyleRulesCallback<ClassNames> = (theme) => ({
   root: {},
 });
 
@@ -134,7 +134,7 @@ export class SSHKeyCreationDrawer extends React.PureComponent<CombinedProps, Sta
   };
 
   handleKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ sshKey: e.target.value || '' });
+    this.setState({ sshKey: e.target.value.trim() || '' });
   };
 }
 

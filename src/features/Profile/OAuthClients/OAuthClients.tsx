@@ -2,7 +2,7 @@ import { compose, path } from 'ramda';
 import * as React from 'react';
 
 import Paper from '@material-ui/core/Paper';
-import { StyleRulesCallback, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
+import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/styles';
 import TableBody from '@material-ui/core/TableBody';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
@@ -25,7 +25,7 @@ import OAuthFormDrawer from './OAuthFormDrawer';
 
 type ClassNames = 'root' | 'title';
 
-const styles: StyleRulesCallback<ClassNames> = (theme: Theme) => ({
+const styles: StyleRulesCallback<ClassNames> = (theme) => ({
   root: {},
   title: {
     margin: `0 0 ${theme.spacing.unit * 2}px`,
@@ -37,8 +37,8 @@ interface Props {
 }
 
 interface FormValues {
-  label?: string;
-  redirect_uri?: string;
+  label: string;
+  redirect_uri: string;
   public: boolean;
 }
 
@@ -75,8 +75,8 @@ class OAuthClients extends React.Component<CombinedProps, State> {
       edit: false,
       errors: undefined,
       values: {
-        label: undefined,
-        redirect_uri: undefined,
+        label: '',
+        redirect_uri: '',
         public: false,
       },
     },
@@ -150,8 +150,8 @@ class OAuthClients extends React.Component<CombinedProps, State> {
             open: false,
             edit: false,
             values: {
-              label: undefined,
-              redirect_uri: undefined,
+              label: '',
+              redirect_uri: '',
               public: false,
             },
           },

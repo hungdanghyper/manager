@@ -4,7 +4,7 @@ import * as React from 'react';
 
 import InputAdornment from '@material-ui/core/InputAdornment';
 import Paper from '@material-ui/core/Paper';
-import { StyleRulesCallback, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
+import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/styles';
 import Search from '@material-ui/icons/Search';
 
 import RenderGuard from 'src/components/RenderGuard';
@@ -16,7 +16,7 @@ type ClassNames = 'root'
   | 'searchSuggestions'
   | 'searchIcon';
 
-const styles: StyleRulesCallback = (theme: Theme & Linode.Theme) => ({
+const styles: StyleRulesCallback = (theme) => ({
   root: {
     position: 'relative',
     width: '100%',
@@ -148,7 +148,6 @@ class EnhancedSelect extends React.Component<CombinedProps, {}> {
     return (
       <div className={`${classes.root} ${className}`}>
         <TextField
-          data-qa-enhanced-select
           InputProps={search && {
             startAdornment: <InputAdornment position="end">
               <Search className={classes.searchIcon} />

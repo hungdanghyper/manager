@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
 
-import { StyleRulesCallback, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
+import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/styles';
 
 import Paper from '@material-ui/core/Paper';
 import TableBody from '@material-ui/core/TableBody';
@@ -16,7 +16,8 @@ import TableRowEmptyState from 'src/components/TableRowEmptyState';
 import TableRowError from 'src/components/TableRowError';
 import TableRowLoading from 'src/components/TableRowLoading';
 import { ISO_FORMAT } from 'src/constants';
-import { getTicketsPage } from 'src/services/support';
+
+import { getTicketsPage } from './ticketUtils';
 
 interface Props {
   filterStatus: 'open' | 'closed';
@@ -29,7 +30,7 @@ interface State extends PaginationProps {
   loading: boolean;
 }
 
-const styles: StyleRulesCallback<ClassNames> = (theme: Theme & Linode.Theme) => ({
+const styles: StyleRulesCallback<ClassNames> = (theme) => ({
   root: {},
 });
 
@@ -86,7 +87,7 @@ class TicketList extends React.Component<CombinedProps, State> {
     const { tickets } = this.state;
     this.setState({ errors: undefined, loading: tickets === undefined});
 
-    getTicketsPage({ page_size: pageSize, page }, this.props.filterStatus === 'open')
+    getTicketsPage({ page_size: pageSize, page }, this.props.filterStatus)
       .then((response) => {
         if (!this.mounted) { return; }
         

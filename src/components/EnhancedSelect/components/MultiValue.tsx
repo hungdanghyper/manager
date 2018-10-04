@@ -1,11 +1,11 @@
 import Chip from '@material-ui/core/Chip';
-import { StyleRulesCallback, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
+import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import { MultiValueProps } from 'react-select/lib/components/MultiValue';
 
 type ClassNames = 'root';
 
-const styles: StyleRulesCallback<ClassNames> = (theme: Theme) => ({
+const styles: StyleRulesCallback<ClassNames> = (theme) => ({
   root: {
     margin: '2px',
   },
@@ -26,12 +26,13 @@ class MultiValue extends React.PureComponent<CombinedProps> {
     const { classes, children } = this.props;
 
     return (
-      <Chip
-        className={classes.root}
-        tabIndex={-1}
-        label={children}
-        onDelete={this.onDelete}
-      />
+        <Chip
+          data-qa-multi-option={children}
+          className={classes.root}
+          tabIndex={-1}
+          label={children}
+          onDelete={this.onDelete}
+        />
     );
   }
 }

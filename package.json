@@ -2,7 +2,7 @@
   "name": "linode-manager",
   "author": "Linode",
   "description": "The Linode Manager website",
-  "version": "0.35.2",
+  "version": "0.36.0",
   "private": true,
   "engines": {
     "node": ">= 8.11.2"
@@ -102,7 +102,8 @@
     "zxcvbn": "^4.4.2"
   },
   "scripts": {
-    "docker:e2e": "docker-compose -f integration-test.yml up --build --exit-code-from manager-e2e",
+    "axe": "npx wdio ./e2e/config/wdio.axe.conf.js",
+    "docker:e2e": "docker-compose -f integration-test.yml up --exit-code-from manager-e2e",
     "docker:test": "docker build -f Dockerfile . -t 'manager' && docker run -it --rm -v $(pwd)/src:/src/src manager test",
     "docker:local": "docker build -f Dockerfile . -t 'manager' && docker run -it --rm -p 3000:3000 -v $(pwd)/src:/src/src manager start",
     "docker:storybook": "docker build -f Dockerfile . -t 'storybook' && docker run -it --rm -p 6006:6006 -v $(pwd)/src:/src/src storybook storybook",
@@ -115,8 +116,8 @@
     "storybook": "start-storybook -p 6006",
     "storybook-static": "build-storybook -c .storybook -o .out",
     "storybook:e2e": "./node_modules/.bin/wdio ./e2e/config/wdio.storybook.conf.js",
-    "storyshots": "docker-compose -f storyshots.yml up --build --exit-code-from manager-storyshots",
-    "storyshots:update": "export UPDATE=-u && docker-compose -f storyshots.yml up --exit-code-from manager-storyshots && unset UPDATE",
+    "storyshots": "docker-compose -f storyshots.yml up --build --exit-code-from manager-storyshots && docker-compose -f storyshots.yml down -v",
+    "storyshots:update": "export UPDATE=-u && docker-compose -f storyshots.yml up --build --exit-code-from manager-storyshots && unset UPDATE && docker-compose -f storyshots.yml down -v",
     "storyshots:test": "npx jest --config ./.storybook/storyshots.jest.config.js src/components/Storyshots.test.tsx --env=jsdom",
     "build-storybook": "build-storybook",
     "serve": "node testServer.js",
@@ -164,6 +165,7 @@
     "@types/xml2js": "^0.4.3",
     "@types/yup": "^0.24.9",
     "@types/zxcvbn": "^4.4.0",
+    "axe-core": "^3.1.1",
     "babel-core": "^6.26.0",
     "babel-preset-react-app": "^3.1.1",
     "csstype": "^2.5.5",

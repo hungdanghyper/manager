@@ -6,7 +6,7 @@ import 'rxjs/add/operator/filter';
 import { Subscription } from 'rxjs/Subscription';
 
 import Paper from '@material-ui/core/Paper';
-import { StyleRulesCallback, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
+import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/styles';
 import TableBody from '@material-ui/core/TableBody';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
@@ -41,7 +41,7 @@ import VolumeDrawer, { Modes, Props as VolumeDrawerProps } from './VolumeDrawer'
 
 type ClassNames = 'title';
 
-const styles: StyleRulesCallback<ClassNames> = (theme: Theme) => ({
+const styles: StyleRulesCallback<ClassNames> = (theme) => ({
   title: {
     marginTop: theme.spacing.unit,
     marginBottom: theme.spacing.unit * 2,
@@ -156,7 +156,6 @@ export class LinodeVolumes extends React.Component<CombinedProps, State> {
 
   componentDidMount() {
     this.mounted = true;
-
     this.eventSubscription = events$
       /** @todo filter on mount time. */
       .filter(e => [
@@ -181,7 +180,6 @@ export class LinodeVolumes extends React.Component<CombinedProps, State> {
   }
 
   getVolumes = () => {
-
     getLinodeVolumes(this.props.linodeID)
       .then((response) => {
         this.setState({
@@ -601,9 +599,14 @@ export class LinodeVolumes extends React.Component<CombinedProps, State> {
     }
 
     updateVolume(id, label)
-      .then(() => {
+      .then((response) => {
         this.closeUpdatingDrawer();
-        this.getVolumes();
+        this.props.actions.updateVolumes((volumes) => {
+          const newVolumes = [...volumes];
+          const idx = volumes.findIndex((volume) => volume.id === response.data.id);
+          newVolumes[idx] = response.data;
+          return newVolumes;
+        });
       })
       .catch((errorResponse: any) => {
         this.setState({
@@ -862,9 +865,11 @@ export class LinodeVolumes extends React.Component<CombinedProps, State> {
     const {
       linodeConfigs: { error: linodeConfigsError },
       linodeLabel,
+      linodeVolumes,
+      linodeStatus,
     } = this.props;
 
-    const { volumeDrawer } = this.state;
+    const { attachedVolumes, volumeDrawer } = this.state;
 
 
     if (linodeConfigsError) {
@@ -880,7 +885,7 @@ export class LinodeVolumes extends React.Component<CombinedProps, State> {
       <React.Fragment>
         <DocumentTitleSegment segment={`${linodeLabel} - Volumes`} />
         <this.placeholder />
-        <this.table updateFor={[this.props.linodeVolumes, this.props.linodeStatus]} />
+        <this.table updateFor={[attachedVolumes, linodeVolumes, linodeStatus]} />
         <VolumeDrawer {...volumeDrawer} />
         <this.updateDialog />
       </React.Fragment>

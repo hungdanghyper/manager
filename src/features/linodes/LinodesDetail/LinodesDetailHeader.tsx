@@ -89,7 +89,7 @@ class LinodesDetailHeader extends React.Component<CombinedProps, State> {
          * The end goal is to display to the user a list of auto-suggestions
          * when they start typing in a new tag, but we don't want to display
          * tags that are already applied to this specific Linode because there cannot
-         * be duplicates on one Linode. 
+         * be duplicates on one Linode.
          */
         const filteredTags = response.data.filter((eachTag: Tag) => {
           return !linode.tags.some((alreadyAppliedTag: string) => {
@@ -97,7 +97,7 @@ class LinodesDetailHeader extends React.Component<CombinedProps, State> {
           })
         })
         /*
-         * reshaping them for the purposes of being passed to the Select component 
+         * reshaping them for the purposes of being passed to the Select component
          */
         const reshapedTags = filteredTags.map((eachTag: Tag) => {
           return {
@@ -144,7 +144,7 @@ class LinodesDetailHeader extends React.Component<CombinedProps, State> {
   handleDeleteTag = (label: string) => {
     const { linode } = this.props;
     /*
-     * Add this tag to the current list of tags that are queued for deletion 
+     * Add this tag to the current list of tags that are queued for deletion
      */
     this.setState({
       listDeletingTags: [
@@ -164,7 +164,7 @@ class LinodesDetailHeader extends React.Component<CombinedProps, State> {
       .then(() => {
         linode.update();
         /*
-        * Remove this tag from the current list of tags that are queued for deletion 
+        * Remove this tag from the current list of tags that are queued for deletion
         */
        const cloneTagSuggestions = clone(this.state.tagsToSuggest) || [];
         this.setState({
@@ -181,7 +181,7 @@ class LinodesDetailHeader extends React.Component<CombinedProps, State> {
       .catch(e => {
         sendToast(`Could not delete Tag: ${label}`);
         /*
-        * Remove this tag from the current list of tags that are queued for deletion 
+        * Remove this tag from the current list of tags that are queued for deletion
         */
         this.setState({
           listDeletingTags: this.state.listDeletingTags.filter(eachTag => eachTag !== label)
@@ -194,7 +194,7 @@ class LinodesDetailHeader extends React.Component<CombinedProps, State> {
     /*
      * This comes from the react-select API
      * basically, we only want to make a request if the user is either
-     * hitting the enter button or choosing a selection from the dropdown 
+     * hitting the enter button or choosing a selection from the dropdown
      */
     if (actionMeta.action !== 'select-option'
       && actionMeta.action !== 'create-option') { return; }
@@ -214,7 +214,7 @@ class LinodesDetailHeader extends React.Component<CombinedProps, State> {
         this.setState({ tagInputValue: '' })
         /*
         * Filter out the new tag out of the auto-suggestion list
-        * since we can't attach this tag to the Linode anymore 
+        * since we can't attach this tag to the Linode anymore
         */
         const cloneTagSuggestions = clone(tagsToSuggest) || [];
         const filteredTags = cloneTagSuggestions.filter((eachTag: Item) => {
@@ -244,7 +244,7 @@ class LinodesDetailHeader extends React.Component<CombinedProps, State> {
       openConfigDrawer,
     } = this.props;
 
-    
+
 
     return (
       <React.Fragment>

@@ -1,6 +1,6 @@
 import * as Bluebird from 'bluebird';
 import * as classNames from 'classnames';
-import { compose, concat, path, pathOr } from 'ramda';
+import { compose, concat, path, pathOr, slice } from 'ramda';
 import * as React from 'react';
 import { connect, MapStateToProps } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
@@ -8,7 +8,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import Chip from '@material-ui/core/Chip';
 import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
-import { StyleRulesCallback, Theme, WithStyles, withStyles } from '@material-ui/core/styles';
+import { StyleRulesCallback, WithStyles, withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
 import InsertPhoto from '@material-ui/icons/InsertPhoto';
@@ -23,7 +23,8 @@ import setDocs from 'src/components/DocsSidebar/setDocs';
 import { DocumentTitleSegment } from 'src/components/DocumentTitle';
 import ErrorState from 'src/components/ErrorState';
 import Grid from 'src/components/Grid';
-import { getTicket, getTicketReplies, SupportTicket } from 'src/services/support';
+import ShowMoreExpansion from 'src/components/ShowMoreExpansion';
+import { getTicket, getTicketReplies } from 'src/services/support';
 import { getGravatarUrlFromHash } from 'src/utilities/gravatar';
 
 import ExpandableTicketPanel from '../ExpandableTicketPanel';
@@ -46,7 +47,7 @@ type ClassNames = 'root'
   | 'attachmentRow'
   | 'attachmentIcon';
 
-const styles: StyleRulesCallback<ClassNames> = (theme: Theme & Linode.Theme) => ({
+const styles: StyleRulesCallback<ClassNames> = (theme) => ({
   root: {},
   title: {
     display: 'flex',
@@ -99,9 +100,9 @@ const styles: StyleRulesCallback<ClassNames> = (theme: Theme & Linode.Theme) => 
   },
   attachmentPaper: {
     padding: `
-      ${theme.spacing.unit * 2}px
+      12px
       ${theme.spacing.unit * 3}px
-      ${theme.spacing.unit}px
+      0
     `,
     overflowX: 'auto',
     width: 500,
@@ -127,6 +128,7 @@ interface State {
   errors?: Linode.ApiFieldError[];
   replies?: Linode.SupportReply[];
   ticket?: Linode.SupportTicket;
+  showMoreAttachments: boolean;
 }
 
 type CombinedProps = RouteProps & StateProps & WithStyles<ClassNames>;
@@ -143,6 +145,7 @@ export class SupportTicketDetail extends React.Component<CombinedProps,State> {
   mounted: boolean = false;
   state: State = {
     loading: true,
+    showMoreAttachments: false,
   }
 
   static docs: Linode.Doc[] = [
@@ -176,9 +179,8 @@ export class SupportTicketDetail extends React.Component<CombinedProps,State> {
     const ticketId = this.props.match.params.ticketId;
     if (!ticketId) { return null; }
     return getTicketReplies(ticketId)
-      .then((response) => {
-        return response.data;
-      });
+      // This is a paginated method but here we only need the list of replies
+      .then(response => response.data);
   }
 
   reloadAttachments = () => {
@@ -193,7 +195,7 @@ export class SupportTicketDetail extends React.Component<CombinedProps,State> {
       });
   }
 
-  handleJoinedPromise = (ticketResponse: SupportTicket, replyResponse: Linode.SupportReply[]) => {
+  handleJoinedPromise = (ticketResponse: Linode.SupportTicket, replyResponse: Linode.SupportReply[]) => {
     /** Gets a unique list of gravatar IDs */
     const uniqueGravatarIDs = replyResponse.reduce(reduceToUniqueGravatarIDs, [ticketResponse.gravatar_id]);
 
@@ -296,32 +298,56 @@ export class SupportTicketDetail extends React.Component<CombinedProps,State> {
     return (
       <React.Fragment>
         {attachments.length !== 0 &&
-        <Grid item xs={12} container justify="flex-start" className="px0">
-          <Grid item xs={12}>
-            <Typography variant="subheading">Attachments</Typography>
+          <Grid item xs={12} container justify="flex-start" className="px0">
+            <Grid item xs={12}>
+              <Typography variant="subheading">Attachments</Typography>
+            </Grid>
+            <Grid item xs={12} className={classes.attachmentPaperWrapper}>
+              {this.renderAttachmentsRows(slice(0, 5, attachments), icons)}
+              {
+                (attachments.length > 5) &&
+                <div onClick={this.toggleShowMoreAttachments} style={{ display: 'inline-block' }}>
+                  <ShowMoreExpansion
+                    name={!this.state.showMoreAttachments
+                      ? "Show More Files"
+                      : "Show Less Files"
+                    }
+                  >
+                    {this.renderAttachmentsRows(slice(5, Infinity, attachments), icons)}
+                  </ShowMoreExpansion>
+                </div>
+              }
+            </Grid>
           </Grid>
-          <Grid item xs={12} className={classes.attachmentPaperWrapper}>
-            <Paper className={classes.attachmentPaper}>
-                {attachments.map((attachment, idx) => {
-                  return (
-                    <Grid container wrap="nowrap" key={idx} className={classes.attachmentRow}>
-                      <Grid item className={classes.attachmentIcon}>
-                        {icons[idx]}
-                      </Grid>
-                      <Grid item>
-                        <Typography component="span">
-                          {attachment}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  )
-                })}
-            </Paper>
-          </Grid>
-        </Grid>
         }
       </React.Fragment>
     );
+  }
+
+  toggleShowMoreAttachments = () => {
+    this.setState({ showMoreAttachments: !this.state.showMoreAttachments });
+  }
+
+  renderAttachmentsRows = (attachments: string[], icons: JSX.Element[]) => {
+    const { classes } = this.props;
+    return (
+      <Paper className={classes.attachmentPaper}>
+        {attachments.map((attachment, idx) => {
+          return (
+            <Grid container wrap="nowrap" key={idx} className={classes.attachmentRow}>
+              <Grid item className={classes.attachmentIcon}>
+                {icons[idx]}
+              </Grid>
+              <Grid item>
+                <Typography component="span">
+                  {attachment}
+                </Typography>
+              </Grid>
+            </Grid>
+          )
+        })}
+      </Paper>
+    )
   }
 
   renderReplies = (replies: Linode.SupportReply[]) => {

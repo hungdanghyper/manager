@@ -1,6 +1,7 @@
 const https = require('https');
 const axios = require('axios');
 const API_ROOT = process.env.REACT_APP_API_ROOT;
+const { isEmpty } = require('lodash');
 
 const getAxiosInstance = function(token) {
   let axiosInstance;
@@ -122,7 +123,7 @@ exports.removeAllLinodes = token => {
     });
 }
 
-exports.createLinode = (token, password, linodeLabel) => {
+exports.createLinode = (token, password, linodeLabel, tags) => {
     return new Promise((resolve, reject) => {
         const linodesEndpoint = '/linode/instances';
         
@@ -137,6 +138,10 @@ exports.createLinode = (token, password, linodeLabel) => {
 
         if (linodeLabel !== false) {
             linodeConfig['label'] = linodeLabel;
+        }
+
+        if (!isEmpty(tags)) {
+            linodeConfig['tags'] = tags;
         }
 
         return getAxiosInstance(token).post(linodesEndpoint, linodeConfig)
@@ -201,8 +206,7 @@ exports.removeAllVolumes = token => {
             return getAxiosInstance(token).delete(`${endpoint}/${res.id}`)
                 .then(response => response.status)
                 .catch(error => {
-                    console.error('Error', error);
-                    reject(error);
+                    reject(`Removing Volume ${res.id} failed due to ${JSON.stringify(error.response.data)}`);
                 });
         }
 
@@ -213,7 +217,7 @@ exports.removeAllVolumes = token => {
             Promise.all(removeVolumesArray).then(function(res) {
                 resolve(res);
             }).catch(error => {
-                console.log(error);
+                console.log(error.data);
                 return error;
             });
         });

@@ -2,7 +2,7 @@ import { compose, lensPath, pathOr, set } from 'ramda';
 import * as React from 'react';
 
 import Button from '@material-ui/core/Button';
-import { StyleRulesCallback, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
+import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 
 import ActionsPanel from 'src/components/ActionsPanel';
@@ -25,7 +25,7 @@ type ClassNames = 'root'
 |  'suffix'
 |  'actionPanel';
 
-const styles: StyleRulesCallback<ClassNames> = (theme: Theme) => ({
+const styles: StyleRulesCallback<ClassNames> = (theme) => ({
   root: {},
   suffix: {
     fontSize: '.9rem',
@@ -141,7 +141,7 @@ class SupportTicketDrawer extends React.Component<CombinedProps, State> {
       loading: false,
     })
   }
-  
+
   loadSelectedEntities = () => {
     this.setState({ loading: true });
     const entity = this.state.ticket.entity_type;
@@ -222,12 +222,12 @@ class SupportTicketDrawer extends React.Component<CombinedProps, State> {
   onInputValueChange = (inputValue:string) => {
     this.setState({ inputValue });
   }
-  
+
   onSubmit = () => {
     const { description, entity_type, entity_id, summary } = this.state.ticket;
     const { onSuccess } = this.props;
     if (!['none','general'].includes(entity_type) && !entity_id) {
-      this.setState({ 
+      this.setState({
         errors: [{ field: 'input', reason: `Please select a ${entityIdtoNameMap[entity_type]}.`}]
       });
       return;
@@ -249,7 +249,7 @@ class SupportTicketDrawer extends React.Component<CombinedProps, State> {
       [entity_type]: Number(entity_id)
     })
       .then((response) => {
-        onSuccess(response.data);
+        onSuccess(response);
         if (!this.mounted) { return; }
         this.setState({
           errors: undefined,
@@ -301,12 +301,13 @@ class SupportTicketDrawer extends React.Component<CombinedProps, State> {
           />
         }
 
-        <Typography 
+        <Typography
           data-qa-support-ticket-helper-text
         >
-          We love helping our customers.
+          {`We love our customers, and we're here to help if you need us.
           Please keep in mind that not all topics are within the scope of our support.
-          For overall system status, please see <a href="https://status.linode.com">status.linode.com</a>.
+          For overall system status, please see `}
+          <a href="https://status.linode.com">status.linode.com</a>.
         </Typography>
 
         <TextField
@@ -321,7 +322,7 @@ class SupportTicketDrawer extends React.Component<CombinedProps, State> {
           {this.renderEntityTypes()}
           <MenuItem key={'general'} value={'general'}>None/General</MenuItem>
         </TextField>
-        
+
         {!['none','general'].includes(ticket.entity_type) &&
           <EnhancedSelect
             options={data}
@@ -367,7 +368,7 @@ class SupportTicketDrawer extends React.Component<CombinedProps, State> {
             color="primary"
             data-qa-submit
           >
-            Submit
+            Open Ticket
           </Button>
           <Button
             onClick={this.close}

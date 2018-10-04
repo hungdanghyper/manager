@@ -2,7 +2,7 @@ import { compose, lensPath, pathOr,  set } from 'ramda';
 import * as React from 'react';
 
 import InputAdornment from '@material-ui/core/InputAdornment';
-import { StyleRulesCallback, Theme, WithStyles, withStyles } from '@material-ui/core/styles';
+import { StyleRulesCallback, WithStyles, withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import AttachFile from '@material-ui/icons/AttachFile';
 import CloudUpload from '@material-ui/icons/CloudUpload';
@@ -25,7 +25,7 @@ type ClassNames =
   | 'replyField'
   | 'uploadProgress'
 
-const styles: StyleRulesCallback<ClassNames> = (theme: Theme & Linode.Theme) => ({
+const styles: StyleRulesCallback<ClassNames> = (theme) => ({
   root: {
     width: '100%',
   },
@@ -130,7 +130,7 @@ class TicketReply extends React.Component<CombinedProps, State> {
     /* Send the reply */
     createReply({ description: value, ticket_id: ticketId })
       .then((response) => {
-        onSuccess(response.data);
+        onSuccess(response);
         this.setState({ submitting: false, value: '' });
       })
       .then(() => {
@@ -180,19 +180,27 @@ class TicketReply extends React.Component<CombinedProps, State> {
   }
 
   handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length) {
+    const { files } = e.target;
+    if (files && files.length) {
+      const reshapedFiles = [];
+
+      /* tslint:disable-next-line */
+      for (let i = 0; i < files.length; i++) {
+        reshapedFiles.push({
+          name: files[i].name,
+          /* The file! These can be quite big */
+          file: files[i],
+          /* Used to keep track of initial upload status */
+          uploading: false,
+          /* Used to ensure that the file doesn't get uploaded again */
+          uploaded: false,
+        });
+      }
+
       this.setState({
         files: [
           ...this.state.files,
-          {
-            name: e.target.files[0].name,
-            /* The file! These can be quite big */
-            file: e.target.files[0],
-            /* Used to keep track of initial upload status */
-            uploading: false,
-            /* Used to ensure that the file doesn't get uploaded again */
-            uploaded: false,
-          }
+          ...reshapedFiles
         ]
       }, () => {
         if (this.inputRef.current) {
@@ -245,6 +253,7 @@ class TicketReply extends React.Component<CombinedProps, State> {
         <input
             ref={this.inputRef}
             type="file"
+            multiple
             id="attach-file"
             style={{ display: 'none' }}
             onChange={this.handleFileSelected}
@@ -300,7 +309,7 @@ class TicketReply extends React.Component<CombinedProps, State> {
             loading={submitting}
             onClick={this.submitForm}
           >
-            Send
+            Add Update
           </Button>
         </ActionsPanel>
       </Grid>

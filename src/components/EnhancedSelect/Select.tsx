@@ -5,10 +5,11 @@ import Async, { AsyncProps } from 'react-select/lib/Async';
 import CreatableSelect, { Props as CreatableSelectProps } from 'react-select/lib/Creatable';
 import { Props as SelectProps } from 'react-select/lib/Select';
 
-import { StyleRulesCallback, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
+import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/styles';
 
 import MultiValue from './components/MultiValue';
 import NoOptionsMessage from './components/NoOptionsMessage';
+import Option from './components/Option';
 import Control from './components/SelectControl';
 import Placeholder from './components/SelectPlaceholder';
 
@@ -17,7 +18,7 @@ type ClassNames = 'root'
 | 'noOptionsMessage'
 | 'divider';
 
-const styles: StyleRulesCallback<ClassNames> = (theme: Theme & Linode.Theme) => ({
+const styles: StyleRulesCallback<ClassNames> = (theme) => ({
   root: {
     maxWidth: 415,
     position: 'relative',
@@ -34,6 +35,7 @@ const styles: StyleRulesCallback<ClassNames> = (theme: Theme & Linode.Theme) => 
     },
     '& .react-select__input': {
       width: '100%',
+      color: theme.palette.text.primary,
       '& input': {
         width: '100% !important',
       },
@@ -46,6 +48,7 @@ const styles: StyleRulesCallback<ClassNames> = (theme: Theme & Linode.Theme) => 
     },
     '& .react-select__menu-list': {
       padding: theme.spacing.unit / 2,
+      backgroundColor: theme.bg.white,
     },
     '& .react-select__option': {
       transition: theme.transitions.create(['background-color', 'color']),
@@ -145,6 +148,7 @@ const _components = {
   NoOptionsMessage,
   Placeholder,
   MultiValue,
+  Option,
 };
 
 type CombinedProps = EnhancedSelectProps

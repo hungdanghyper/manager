@@ -1,5 +1,5 @@
 import Paper from '@material-ui/core/Paper';
-import { StyleRulesCallback, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
+import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/styles';
 import TableBody from '@material-ui/core/TableBody';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
@@ -25,7 +25,7 @@ import SSHKeyCreationDrawer from './SSHKeyCreationDrawer';
 
 type ClassNames = 'root';
 
-const styles: StyleRulesCallback<ClassNames> = (theme: Theme) => ({
+const styles: StyleRulesCallback<ClassNames> = (theme) => ({
   root: {},
 });
 
@@ -95,7 +95,7 @@ export class SSHKeys extends React.Component<CombinedProps, State> {
               <TableRow>
                 <TableCell data-qa-label-column>Label</TableCell>
                 <TableCell data-qa-key-column>Key</TableCell>
-                <TableCell data-qa-created-column>Created</TableCell> 
+                <TableCell data-qa-created-column>Created</TableCell>
                 <TableCell />
               </TableRow>
             </TableHead>
@@ -128,7 +128,7 @@ export class SSHKeys extends React.Component<CombinedProps, State> {
   }
 
   renderContent = () => {
-    const { loading, error, result, count } = this.props;
+    const { loading, error, data, count } = this.props;
 
     if (loading) {
       return SSHKeys.renderLoading();
@@ -138,8 +138,8 @@ export class SSHKeys extends React.Component<CombinedProps, State> {
       return SSHKeys.renderError(error);
     }
 
-    if (result && count > 0) {
-      return this.renderData(result);
+    if (data && count > 0) {
+      return this.renderData(data);
     }
 
     return SSHKeys.renderEmptyState();
@@ -230,7 +230,7 @@ const styled = withStyles(styles, { withTheme: true });
 
 const documented = setDocs(SSHKeys.docs);
 
-const updatedRequest = (p: any, f: any) => getSSHKeys(p, f)
+const updatedRequest = (ownProps: any, params: any, filters: any) => getSSHKeys(params, filters)
   .then((response) => ({
     ...response,
     data: updateResponseData(response.data),

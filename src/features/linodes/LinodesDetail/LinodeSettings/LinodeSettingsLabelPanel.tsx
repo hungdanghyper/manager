@@ -1,7 +1,7 @@
 import { compose, lensPath, set } from 'ramda';
 import * as React from 'react';
 
-import { StyleRulesCallback, Theme, withStyles, WithStyles } from '@material-ui/core/styles';
+import { StyleRulesCallback, withStyles, WithStyles } from '@material-ui/core/styles';
 
 import ActionsPanel from 'src/components/ActionsPanel';
 import Button from 'src/components/Button';
@@ -15,7 +15,7 @@ import scrollErrorIntoView from 'src/utilities/scrollErrorIntoView';
 
 type ClassNames = 'root';
 
-const styles: StyleRulesCallback<ClassNames> = (theme: Theme) => ({
+const styles: StyleRulesCallback<ClassNames> = (theme) => ({
   root: {},
 });
 
@@ -48,7 +48,7 @@ class LinodeSettingsLabelPanel extends React.Component<CombinedProps, State> {
     this.setState(set(lensPath(['errors']), undefined));
 
     updateLinode(this.props.linodeId, { label: this.state.updatedValue })
-      .then(response => response.data)
+      .then(response => response)
       .then((linode) => {
         this.props.updateLinode((existingLinode) => ({
           ...existingLinode,
